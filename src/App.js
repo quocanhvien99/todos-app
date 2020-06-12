@@ -1,19 +1,43 @@
 import React, { Component } from 'react';
 import classNames from 'classnames';
 import illustration from './illustration.svg';
+import Item from './components/Item';
+import Modal from './components/Modal';
 import './App.css';
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
-      todos: [
-        { name: 'Working on Project', isDone: false },
-        { name: 'Doing Homework', isDone: false },
-        { name: 'College', isDone: true },
-        { name: 'Workout', isDone: true }
-      ],
+      todos: [ ],
       isAdding: false
+    }
+  }
+  openAddForm() {
+    return () => this.setState({ isAdding: true });
+  }
+  addItem(element) {
+    return () => {
+      this.setState({
+        isAdding: false,
+        todos: [...this.state.todos, { name: element.value, isDone:false }]
+      });
+      {
+        element.value = '';
+      }
+    }
+  }
+  itemClicked(item) {
+    return () => {
+      const { todos } = this.state;
+      const index = todos.indexOf(item);      
+      this.setState({
+        todos: [
+          ...todos.slice(0, index),
+          { name: item.name, isDone: !item.isDone },
+          ...todos.slice(index + 1)
+        ]
+      })
     }
   }
   render() {
@@ -22,36 +46,33 @@ class App extends Component {
         <div className="container">			
           <div className="title">dailist</div>
           <div className="nothing-display">
-            <img src={illustration} alt="" className="display-none" />
+            <img src={illustration} alt="" className={ classNames({ 'display-none': this.state.todos.length }) } />
           </div>
-          <div className="list-wrapper">
+          <div className={ classNames('list-wrapper', { 'display-none': !this.state.todos.length }) }>
             <div className="upcoming">
               <p>upcoming</p>
-              <div className="upcoming-item item">
-                03. Working on Project
-              </div>
-              <div className="upcoming-item item">
-                04. Doing Homework
-              </div>
+              {
+                this.state.todos.map((item, index) => {
+                  if (item.isDone === false) {
+                    return <Item index={index} item={item} onClick={this.itemClicked(item)} />
+                  }
+                })
+              }
             </div>
             <div className="finished">
               <p>finished</p>
-              <div className="finished-item item">
-                01. College
-              </div>
-              <div className="finished-item item">
-                02. Workout
-              </div>
+              {
+                this.state.todos.map((item, index) => {
+                  if (item.isDone === true) {
+                    return <Item index={index} item={item} onClick={this.itemClicked(item)} />
+                  }
+                })
+              }
             </div>
           </div>
-          <button id="add-btn">+</button>
-        </div>
-        <div className="Modal display-none">
-          <div className="add-item-wrapper">
-            <input type="text" id="new-todo" placeholder="Add something to do..." />
-            <button id="add-done">Add</button>
-          </div>
-        </div>
+          <button id="add-btn" onClick={this.openAddForm()}>+</button>
+        </div>        
+        <Modal isAdding={this.state.isAdding} addItem={this.addItem.bind(this)} />      
       </div>
     );
   }

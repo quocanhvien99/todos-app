@@ -13,10 +13,6 @@ body {
 .container .nothing-display img {
   width: 100%;
   margin-top: 20px;
-  display: block;
-}
-.container .list-wrapper {
-  display: block;
 }
 .container .title {
   color: #FFF;
@@ -71,7 +67,6 @@ body {
   top: 0;
   left: 0;
   background-color: #000;
-  display: block;
 }
 .add-item-wrapper {
   width: 400px;
